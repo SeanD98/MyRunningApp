@@ -18,5 +18,6 @@ public class MainActivity extends AppCompatActivity {
         //Testing Github Pushes
         int test = 10;
         int test2 = 11;
+        int test3 = 12;
     }
 }
