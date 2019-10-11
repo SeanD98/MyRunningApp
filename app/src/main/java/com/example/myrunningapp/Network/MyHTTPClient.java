@@ -69,8 +69,8 @@ public class MyHTTPClient {
     public static String Password = "";
     private static DefaultHttpClient client = MyHTTPClient.getDefaultHttpClient();
     private static final String TAG = MyHTTPClient.class.getSimpleName();
-    private static final int TIME_OUT_CONNECTION = 30000;
-    private static final int TIME_OUT_SOCKET = 30000;
+//    private static final int TIME_OUT_CONNECTION = 30000;
+//    private static final int TIME_OUT_SOCKET = 30000;
 
     public static void setCredentials(String username, String password) {
         MyHTTPClient.client = getDefaultHttpClient();
@@ -81,9 +81,9 @@ public class MyHTTPClient {
 
     public static DefaultHttpClient getDefaultHttpClient() {
         HttpParams params = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(params,
-                MyHTTPClient.TIME_OUT_CONNECTION);
-        HttpConnectionParams.setSoTimeout(params, MyHTTPClient.TIME_OUT_SOCKET);
+//        HttpConnectionParams.setConnectionTimeout(params,
+//                MyHTTPClient.TIME_OUT_CONNECTION);
+//        HttpConnectionParams.setSoTimeout(params, MyHTTPClient.TIME_OUT_SOCKET);
         HttpConnectionParams.setSocketBufferSize(params, 8192);
         SchemeRegistry schemeRegistry = new SchemeRegistry();
         KeyStore trustStore;

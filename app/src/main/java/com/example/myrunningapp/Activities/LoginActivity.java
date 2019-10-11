@@ -2,7 +2,6 @@ package com.example.myrunningapp.Activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,18 +19,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.myrunningapp.Network.MyHTTPClient;
 import com.example.myrunningapp.R;
 import com.example.myrunningapp.Utils.AppUtils;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.example.myrunningapp.Utils.StyledMapActivity;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.security.spec.ECField;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
@@ -179,8 +171,8 @@ public class LoginActivity extends AppCompatActivity {
                                         String userName = data.get("username").toString();
 
 
-                                        Intent goToMain = new Intent(getApplicationContext(), MainActivity.class);
-                                        startActivity(goToMain);
+                                        Intent goToMap = new Intent(getApplicationContext(), StyledMapActivity.class);
+                                        startActivity(goToMap);
                                     }
                                 }
                                 catch(Exception e)

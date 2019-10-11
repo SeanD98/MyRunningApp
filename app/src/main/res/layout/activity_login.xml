@@ -108,7 +108,7 @@
         android:layout_width="175dp"
         android:layout_height="50dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/rounded_button_2"
+        android:background="@drawable/rounded_button_3"
         android:text="Skip"
         android:textColor="#C84C7E"
         app:layout_constraintBottom_toBottomOf="parent"

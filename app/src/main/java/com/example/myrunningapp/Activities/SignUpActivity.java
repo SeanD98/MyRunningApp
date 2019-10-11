@@ -150,8 +150,8 @@ public class SignUpActivity extends AppCompatActivity {
                                         });
                                     } else {
 
-                                        Intent goToMain = new Intent(getApplicationContext(), MainActivity.class);
-                                        startActivity(goToMain);
+                                        Intent goToMaps = new Intent(getApplicationContext(), MapsActivity.class);
+                                        startActivity(goToMaps);
                                     }
                                 }
                                 catch(Exception e)
