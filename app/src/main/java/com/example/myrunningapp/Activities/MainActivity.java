@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.example.myrunningapp.R;
+import com.google.android.gms.maps.MapView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,13 +12,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_maps);
 
-        //TextView main = (TextView) findViewById(R.id.main_txt);
-
-        //Testing Github Pushes
-        int test = 10;
-        int test2 = 11;
-        int test3 = 12;
+        //MapView mapView = (MapView) findViewById(R.id.mapView);
     }
 }

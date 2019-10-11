@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MyRunningApp</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
