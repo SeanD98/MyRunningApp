@@ -14,5 +14,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //TextView main = (TextView) findViewById(R.id.main_txt);
+
+        //Testing Github Pushes
+        int test = 10;
     }
 }
