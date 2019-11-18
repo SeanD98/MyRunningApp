@@ -1,7 +1,6 @@
 package com.example.myrunningapp.Activities;
 
 import android.os.Bundle;
-import android.widget.TextView;
 
 import com.example.myrunningapp.R;
 import com.google.android.gms.maps.MapView;
@@ -14,6 +13,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //MapView mapView = (MapView) findViewById(R.id.mapView);
+        MapView mapView = (MapView) findViewById(R.id.mapView);
     }
 }
