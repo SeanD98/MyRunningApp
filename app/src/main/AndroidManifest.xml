@@ -33,7 +33,10 @@
         <activity android:name=".Activities.SignUpActivity" />
         <activity android:name=".Activities.ContinueSignUpActivity" />
         <activity android:name=".Activities.MainActivity" />
-        <activity android:name=".Activities.MapsActivity"/>
+        <activity android:name=".Activities.AddFriendActivity"/>
+        <activity android:name=".Activities.FriendsActivity"/>
+        <activity android:name=".Activities.SettingsActivity"/>
+
         <activity android:name=".Utils.StyledMapActivity" />
     </application>
 

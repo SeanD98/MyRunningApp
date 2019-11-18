@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.example.myrunningapp.Network.MyHTTPClient;
 import com.example.myrunningapp.R;
 import com.example.myrunningapp.Utils.AppUtils;
+import com.example.myrunningapp.Utils.StyledMapActivity;
 
 import org.json.JSONObject;
 
@@ -150,7 +151,7 @@ public class SignUpActivity extends AppCompatActivity {
                                         });
                                     } else {
 
-                                        Intent goToMaps = new Intent(getApplicationContext(), MapsActivity.class);
+                                        Intent goToMaps = new Intent(getApplicationContext(), StyledMapActivity.class);
                                         startActivity(goToMaps);
                                     }
                                 }

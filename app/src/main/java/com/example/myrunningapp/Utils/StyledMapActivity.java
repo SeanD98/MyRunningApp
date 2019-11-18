@@ -1,10 +1,11 @@
 package com.example.myrunningapp.Utils;
 
 import android.Manifest;
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -17,9 +18,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 
+import com.example.myrunningapp.Activities.FriendsActivity;
+import com.example.myrunningapp.Activities.SettingsActivity;
 import com.example.myrunningapp.R;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,6 +30,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,15 +40,20 @@ import java.util.List;
 public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private LocationRequest mLocationRequest;
 
     public Location location;
+    private ArrayList<LatLng> points;
+    Polyline line;
+    MarkerOptions marker = new MarkerOptions();
 
     private static final String TAG = StyledMapActivity.class.getSimpleName();
-
     private static final String SELECTED_STYLE = "selected_style";
+    private static final long INTERVAL = 1000 * 60 * 1; //1 minute
+    private static final long FASTEST_INTERVAL = 1000 * 60 * 1; // 1 minute
+    private static final float SMALLEST_DISPLACEMENT = 0.25F; //quarter of a meter
 
     private int mSelectedStyleId = R.string.style_label_default;
-
     private int mStyleIds[] = {
             R.string.style_label_retro,
             R.string.style_label_night,
@@ -51,6 +62,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
             R.string.style_label_default,
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +70,8 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
             mSelectedStyleId = savedInstanceState.getInt(SELECTED_STYLE);
         }
         setContentView(R.layout.activity_maps);
+
+        points = new ArrayList<LatLng>();
 
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -93,15 +107,52 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13));
 
                     CameraPosition cameraPosition = new CameraPosition.Builder()
-                            .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
-                            .zoom(17)                   // Sets the zoom
-                            .bearing(90)                // Sets the orientation of the camera to east
-                            .tilt(40)                   // Sets the tilt of the camera to 30 degrees
-                            .build();                   // Creates a CameraPosition from the builder
+                            .target(new LatLng(location.getLatitude(), location.getLongitude()))
+                            .zoom(15)
+                            .bearing(90)
+                            .tilt(40)
+                            .build();
                     mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
+                    marker.position(new LatLng(location.getLatitude(), location.getLongitude()));
+                    marker.title("You are here!");
+                    mMap.addMarker(marker);
                 }
             }
         setSelectedStyle();
+    }
+
+
+    public void onLocationChanged(Location location) {
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+        LatLng latLng = new LatLng(latitude, longitude); //you already have this
+
+        points.add(latLng); //added
+
+        redrawLine(); //added
+    }
+
+    private void redrawLine(){
+
+        mMap.clear();  //clears all Markers and Polylines
+
+        PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
+        for (int i = 0; i < points.size(); i++) {
+            LatLng point = points.get(i);
+            options.add(point);
+        }
+        mMap.addMarker(marker); //add Marker in current position
+        line = mMap.addPolyline(options); //add Polyline
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+        mLocationRequest.setSmallestDisplacement(SMALLEST_DISPLACEMENT); //added
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     @Override
@@ -112,8 +163,16 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_style_choose) {
+        if (item.getItemId() == R.id.theme_menu_item) {
             showStylesDialog();
+        }
+        if (item.getItemId() == R.id.friends_menu_item) {
+            Intent goToFriends = new Intent(this, FriendsActivity.class);
+            startActivity(goToFriends);
+        }
+        if (item.getItemId() == R.id.settings_menu_item) {
+            Intent goToSettings = new Intent(this, SettingsActivity.class);
+            startActivity(goToSettings);
         }
         return true;
     }

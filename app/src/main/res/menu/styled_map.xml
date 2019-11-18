@@ -2,9 +2,18 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
+<!--    <item-->
+<!--        android:id="@+id/menu_style_choose"-->
+<!--        android:icon="@drawable/theme_icon"-->
+<!--        android:title="choose style"-->
+<!--        app:showAsAction="always" />-->
     <item
-        android:id="@+id/menu_style_choose"
-        android:icon="@drawable/theme_icon"
-        android:title="choose style"
-        app:showAsAction="always" />
+        android:id="@+id/theme_menu_item"
+        android:title="Theme" />
+    <item
+        android:id="@+id/friends_menu_item"
+        android:title="Friends" />
+    <item
+        android:id="@+id/settings_menu_item"
+        android:title="Settings" />
 </menu>

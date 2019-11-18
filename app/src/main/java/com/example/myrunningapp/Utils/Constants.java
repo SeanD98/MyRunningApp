@@ -10,5 +10,7 @@ public class Constants {
     public static final String API_CREATE_USER = "/api/createUser";
     public static final String API_LOGIN = "/api/login";
     public static final String API_CHANGE_USERNAME = "/api/changeUsername";
-    public static final String API_GET_USERS = "/api/getUser/";
+    public static final String API_GET_FRIENDS = "/api/getAllUsers/";
+    public static final String API_ADD_FRIEND = "/api/addFriend";
+    public static final String API_GET_RELATIONSHIPS = "api/getFriends/";
 }

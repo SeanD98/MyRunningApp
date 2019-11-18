@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".Activities.AddFriendActivity">
+
+    <Button
+        android:id="@+id/addFriiendBttn"
+        android:layout_width="338dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="96dp"
+        android:alpha="0.8"
+        android:background="@drawable/rounded_button"
+        android:text="Add Friend!"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.896" />
+
+    <EditText
+        android:id="@+id/emailAddressEditText"
+        android:layout_width="389dp"
+        android:layout_height="60dp"
+        android:ems="10"
+        android:hint="Email Address"
+        android:inputType="textEmailAddress"
+        app:layout_constraintBottom_toTopOf="@+id/addFriiendBttn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.702" />
+
+    <TextView
+        android:id="@+id/addFrendsTextView"
+        android:layout_width="330dp"
+        android:layout_height="62dp"
+        android:layout_marginTop="16dp"
+        android:text="Add Friends!"
+        android:textAlignment="viewStart"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textColor="#E48275"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/emailAddressEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.197"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.65" />
+
+    <TextView
+        android:id="@+id/addFriendsSubTextView"
+        android:layout_width="380dp"
+        android:layout_height="21dp"
+        android:layout_marginBottom="48dp"
+        android:text="Please enter your friends email address"
+        android:textColor="#DB7277"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/emailAddressEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.516"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addFrendsTextView"
+        app:layout_constraintVertical_bias="0.0" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -53,7 +53,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.net.NetworkRequest;
 import android.provider.ContactsContract;
+import android.renderscript.ScriptGroup;
 import android.util.Base64;
 import android.util.Log;
 
@@ -62,6 +64,8 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
 import android.app.Activity;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class MyHTTPClient {
 
@@ -250,4 +254,66 @@ public class MyHTTPClient {
         }
         callback.onSignUpResponse(true, result.toString());
     }
+
+    public interface APIGetFriendsCallback{
+        void onAllFriendsResponse(boolean success, String serverResponse);
+    }
+
+    public static void getAllUsers(final APIGetFriendsCallback callback) throws Exception {
+        MyHTTPClient.setCredentials(Username, Password);
+        String serverResponse = "";
+        int status;
+
+        try {
+            HttpGet httpget = new HttpGet(buildUrl(Constants.API_GET_FRIENDS));
+            HttpResponse response = MyHTTPClient.client.execute(httpget);
+            status = response.getStatusLine().getStatusCode();
+            HttpEntity entity = response.getEntity();
+            StringBuffer result = null;
+
+            if (status == HttpStatus.SC_OK){
+                if (entity != null){
+                    InputStream in = entity.getContent();
+                    serverResponse = MyHTTPClient.convertStreamToString(in);
+                }
+            } else if (status == HttpStatus.SC_UNAUTHORIZED){
+                serverResponse = "Unauthorised";
+
+                if(status == HttpStatus.SC_OK){
+                    if(entity != null){
+                        InputStream in = entity.getContent();
+                        serverResponse = MyHTTPClient.convertStreamToString(in);
+                    }
+                } else {
+                    serverResponse = "Not found";
+                }
+            } else if(status == HttpStatus.SC_NOT_FOUND){
+                serverResponse = "Not found";
+            }
+        } catch (IllegalArgumentException e){
+            throw new IllegalArgumentException(e.getMessage());
+        } catch (ClientProtocolException e){
+            Log.e(TAG, "Client Protocol Exception: " + e.getMessage());
+            throw new ClientProtocolException("The server failed to respond with a valid HTTP Response");
+        } catch (IOException e){
+            Log.e(TAG, "IOException: " + e.getMessage());
+            if (e.getMessage().equals(null)) {
+                if (e instanceof SocketTimeoutException) {
+                    throw new IOException("Socket was closed unexpectedly, ensure server is running");
+                } else {
+                    throw new IOException("Socket failed to respond with valid http response");
+                }
+            } else {
+                throw new IOException(e.getMessage());
+            }
+        }  finally {
+            System.gc();
+        }
+        callback.onAllFriendsResponse(true, serverResponse);
+    }
+
+
+
+
+
 }
