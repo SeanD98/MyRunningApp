@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCallback {
-
     private GoogleMap mMap;
     private LocationRequest mLocationRequest;
 
@@ -48,7 +47,6 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
     private ArrayList<LatLng> points;
     Polyline line;
     MarkerOptions marker = new MarkerOptions();
-    //LocationManager mLocationManager;
     LocationManager mLocationManager;
 
     boolean onFirstLaunch = true;
@@ -81,6 +79,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
         setContentView(R.layout.activity_maps);
 
+
         points = new ArrayList<>();
 
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -97,7 +96,6 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_LOCATION_2);
             }
         }
-
 
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -117,15 +115,18 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         setSelectedStyle();
+
     }
 
     public void zoomMapToUser(GoogleMap googleMap)
     {
         mMap = googleMap;
-        //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 13));
+        //Location lLocation =
+
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 13));
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()))
-                .zoom(15)
+                .zoom(20)
                 .bearing(90)
                 .tilt(40)
                 .build();
@@ -142,8 +143,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         @Override
         public void onLocationChanged(final Location location) {
             mLocation = location;
-            if (onFirstLaunch)
-            {
+            if (onFirstLaunch) {
                 zoomMapToUser(mMap);
             } else {
                 double latitude = location.getLatitude();
