@@ -115,6 +115,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         setSelectedStyle();
+        //test new code 
 
     }
 
