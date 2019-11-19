@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
@@ -41,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCallback {
+
     private GoogleMap mMap;
     private LocationRequest mLocationRequest;
 
@@ -51,6 +54,10 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
     LocationManager mLocationManager;
 
     boolean onFirstLaunch = true;
+    Button startButton;
+    boolean start;
+    Button stopButton;
+    boolean stop;
 
     private static final String TAG = StyledMapActivity.class.getSimpleName();
     private static final String SELECTED_STYLE = "selected_style";
@@ -80,9 +87,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
         setContentView(R.layout.activity_maps);
 
-
         points = new ArrayList<>();
-
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         if ((checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
@@ -101,6 +106,29 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        startButton = (Button) findViewById(R.id.start_button);
+        stopButton = (Button) findViewById(R.id.stop_button);
+
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startButton.setVisibility(View.GONE);
+                stopButton.setVisibility(View.VISIBLE);
+                start = true;
+                stop = false;
+            }
+        });
+
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopButton.setVisibility(View.INVISIBLE);
+                startButton.setVisibility(View.VISIBLE);
+                start = false;
+                stop = true;
+            }
+        });
     }
 
     @Override
@@ -116,15 +144,11 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         setSelectedStyle();
-        //test new code 
-
     }
 
     public void zoomMapToUser(GoogleMap googleMap)
     {
         mMap = googleMap;
-        //Location lLocation =
-
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 13));
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()))
@@ -141,7 +165,8 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
 
-    private final LocationListener mLocationListener = new LocationListener() {
+    private final LocationListener mLocationListener = new LocationListener()
+    {
         @Override
         public void onLocationChanged(final Location location) {
             mLocation = location;
@@ -172,17 +197,17 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
     };
 
-    private void redrawLine(){
-
-        mMap.clear();
-
-        PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
-        for (int i = 0; i < points.size(); i++) {
-            LatLng point = points.get(i);
-            options.add(point);
+    private void redrawLine() {
+        while (start) {
+            mMap.clear();
+            PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
+            for (int i = 0; i < points.size(); i++) {
+                LatLng point = points.get(i);
+                options.add(point);
+            }
+            mMap.addMarker(marker);
+            line = mMap.addPolyline(options);
         }
-        mMap.addMarker(marker);
-        line = mMap.addPolyline(options);
     }
 
     protected void createLocationRequest() {
