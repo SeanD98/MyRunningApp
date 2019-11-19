@@ -3,6 +3,7 @@ package com.example.myrunningapp.Activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -20,6 +21,7 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SignUpActivity extends AppCompatActivity {
@@ -35,7 +37,6 @@ public class SignUpActivity extends AppCompatActivity {
     Button signUpButton;
 
     ImageView logo_signup;
-    ImageView back_arrow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +68,6 @@ public class SignUpActivity extends AppCompatActivity {
         signUpButton = (Button) findViewById(R.id.bttn_signup);
 
         logo_signup = (ImageView) findViewById(R.id.logo_signup);
-        back_arrow = (ImageView) findViewById(R.id.back_arrow);
 
         //Intents
         final Intent goToLogin = new Intent(this, LoginActivity.class);
@@ -99,18 +99,19 @@ public class SignUpActivity extends AppCompatActivity {
                 startActivity(goToLogin);
             }
         });
-        back_arrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(goToHome);
-            }
-        });
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
     }
 
-//    EditText email_signup;
-//    EditText signup_pass;
-//    EditText signup_pass_confirm;
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return true;
+    }
 
     public void signUp() {
         final Animation shake = AnimationUtils.loadAnimation(getApplicationContext(),

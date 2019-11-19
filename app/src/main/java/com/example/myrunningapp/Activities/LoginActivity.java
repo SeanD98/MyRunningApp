@@ -4,16 +4,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myrunningapp.Network.MyHTTPClient;
@@ -41,12 +47,18 @@ public class LoginActivity extends AppCompatActivity {
     Button skipButton;
 
     ImageView logo;
-    ImageView back_arrow_login;
+   // ImageView back_arrow_login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
 
         //Animations
         Animation slide_up = AnimationUtils.loadAnimation(getApplicationContext(),
@@ -72,8 +84,6 @@ public class LoginActivity extends AppCompatActivity {
         skipButton = (Button) findViewById(R.id.bttn_skip);
 
         logo = findViewById(R.id.logo_login);
-        back_arrow_login = (ImageView) findViewById(R.id.login_back_arrow);
-
 
         final Intent goToSignUp = new Intent(this, SignUpActivity.class);
         final Intent goToHome = new Intent(this, HomeActivity.class);
@@ -119,19 +129,19 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
-
-        back_arrow_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(goToHome);
-            }
-        });
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return true;
+    }
+
 
     public void login() {
         final Animation shake = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.shake);
-        //Get text from textboxes
+
         final String username = Username.getText().toString();
         final String password = Password.getText().toString();
 
