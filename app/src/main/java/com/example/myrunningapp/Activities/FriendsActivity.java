@@ -13,6 +13,7 @@ import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myrunningapp.Network.MyHTTPClient;
@@ -80,8 +81,6 @@ public class FriendsActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-//                                        PersonAdapter = new PersonAdapter(getApplicationContext(), friendHeaders, friendsListResponse);
-//                                        expListView.setAdapter(listAdapter);
                                         mPersonAdapter = new PersonAdapter(getApplicationContext(), friendHeaders, finalFriendsListResponse);
                                         friendsListView.setAdapter(mPersonAdapter);
                                     }
@@ -103,6 +102,11 @@ public class FriendsActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.add_friend_menu, menu);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle("                     Friends"); //Temp until gravity solution is found
+        }
         return true;
     }
 

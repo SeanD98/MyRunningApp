@@ -4,8 +4,7 @@
 
     <item
         android:id="@+id/add_friend_icon"
-
-        android:icon="@drawable/add_icon"
-        android:title="+"
+        android:title="Friends"
+        android:icon="@drawable/add_icon_white"
         app:showAsAction="always" />
 </menu>

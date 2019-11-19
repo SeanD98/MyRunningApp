@@ -1,10 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@color/app_background"
     tools:context=".Activities.SettingsActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/rounded_background"
+        android:fitsSystemWindows="true">
+
+        <TableLayout
+            android:id="@+id/settings_table"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:stretchColumns="0,1">
+
+
+            <TableRow
+                android:id="@+id/settings_row_3"
+                android:layout_width="fill_parent"
+                android:minHeight="50dp">
+                <TextView
+                    android:layout_column="0"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:padding="3dp"
+                    android:text="Measurement Units"
+                    android:textAppearance="@android:style/TextAppearance.Small"
+                    android:textColor="@color/txt_colour_3"/>
+            </TableRow>
+
+
+            <TableRow
+                android:id="@+id/settings_row"
+                android:layout_width="fill_parent"
+                android:minHeight="50dp">
+                <TextView
+                    android:layout_column="0"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:padding="3dp"
+                    android:text="Measurement Units"
+                    android:textAppearance="@android:style/TextAppearance.Small"
+                    android:textColor="@color/txt_colour_3"/>
+            </TableRow>
+
+
+            <TableRow
+                android:id="@+id/settings_row_5"
+                android:layout_width="fill_parent"
+                android:minHeight="50dp">
+                <TextView
+                    android:layout_column="0"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:padding="3dp"
+                    android:text="Measurement Units"
+                    android:textAppearance="@android:style/TextAppearance.Small"
+                    android:textColor="@color/txt_colour_3"/>
+            </TableRow>
+
+
+            <TableRow
+                android:id="@+id/settings_row_2"
+                android:layout_width="fill_parent"
+                android:minHeight="50dp">
+                <TextView
+                    android:layout_column="0"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:padding="3dp"
+                    android:text="Calorie Counter"
+                    android:textAppearance="@android:style/TextAppearance.Small"
+                    android:textColor="@color/txt_colour_3"/>
+                <Switch
+                    android:id="@+id/settings_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="54dp"
+                    android:layout_gravity="center_vertical|right"
+                    android:textColorLink="@color/colorAccent"
+                    android:textSize="24dp"
+                    tools:checked="false"/>
+            </TableRow>
+
+
+            <TableRow
+                android:id="@+id/auto_login_row"
+                android:layout_width="fill_parent"
+                android:minHeight="50dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_column="0"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:padding="3dp"
+                    android:text="Auto Login"
+                    android:textAppearance="@android:style/TextAppearance.Small"
+                    android:textColor="@color/txt_colour_3"/>
+                <Switch
+                    android:id="@+id/settings_switch_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="54dp"
+                    android:layout_gravity="center_vertical|right"
+                    android:textColorLink="@color/colorAccent"
+                    android:textSize="24dp"
+                    tools:checked="false"/>
+            </TableRow>
+
+
+        </TableLayout>
+    </RelativeLayout>
+</RelativeLayout>
