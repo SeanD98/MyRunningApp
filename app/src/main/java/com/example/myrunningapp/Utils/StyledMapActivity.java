@@ -11,11 +11,14 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
@@ -32,17 +35,46 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
 public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    Handler timerHandler = new Handler();
+    TextView timerTextView;
+    TextView distancetxt;
+    ImageView calorieIcon;
+    TextView calorieCounterTxt;
+    long startTime = 0;
+    float[] Distance = new float[1];
+    float overallDistance;
+    float distanceTo1Place;
+
+    Runnable timerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            long millis = System.currentTimeMillis() - startTime;
+            int seconds = (int) (millis / 1000);
+            int minutes = seconds / 60;
+            seconds = seconds % 60;
+
+            timerTextView.setText(String.format("%d:%02d", minutes, seconds));
+            timerHandler.postDelayed(this, 500);
+        }
+    };
+
 
     private GoogleMap mMap;
     private LocationRequest mLocationRequest;
@@ -54,9 +86,9 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
     LocationManager mLocationManager;
 
     boolean onFirstLaunch = true;
-    Button startButton;
+    FloatingActionButton startButton;
     boolean start;
-    Button stopButton;
+    FloatingActionButton stopButton;
     boolean stop;
 
     private static final String TAG = StyledMapActivity.class.getSimpleName();
@@ -87,11 +119,16 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
         setContentView(R.layout.activity_maps);
 
+        timerTextView = (TextView) findViewById(R.id.run_timer);
+        distancetxt = (TextView) findViewById(R.id.distance);
+        calorieCounterTxt = (TextView) findViewById(R.id.calorie_counter_txt);
+        calorieIcon = (ImageView) findViewById(R.id.calorie_icon);
+
         points = new ArrayList<>();
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         if ((checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-            && (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+                && (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
                     LOCATION_REFRESH_DISTANCE, mLocationListener);
         } else {
@@ -107,28 +144,39 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        startButton = (Button) findViewById(R.id.start_button);
-        stopButton = (Button) findViewById(R.id.stop_button);
+        startButton = (FloatingActionButton) findViewById(R.id.start_button);
+        stopButton = (FloatingActionButton) findViewById(R.id.stop_button);
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startButton.setVisibility(View.GONE);
-                stopButton.setVisibility(View.VISIBLE);
+                startButton.hide();
+                stopButton.show();
                 start = true;
                 stop = false;
+                startTime = System.currentTimeMillis();
+                timerHandler.postDelayed(timerRunnable, 0);
+                distancetxt.setText("0.00");
+                calorieCounterTxt.setVisibility(View.VISIBLE);
+                calorieCounterTxt.setText("0" + " k/cal");
+                calorieIcon.setVisibility(View.VISIBLE);
+                mMap.clear();
             }
         });
 
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopButton.setVisibility(View.INVISIBLE);
-                startButton.setVisibility(View.VISIBLE);
+                stopButton.hide();
+                startButton.show();
                 start = false;
                 stop = true;
+                timerHandler.removeCallbacks(timerRunnable);
+                overallDistance = 0;
+                points.clear();
             }
         });
+
     }
 
     @Override
@@ -138,16 +186,41 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap)
-    {
+    public void onMapReady(GoogleMap googleMap) {
+        marker.alpha(0.0f);
         mMap = googleMap;
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         setSelectedStyle();
+
+        if (onFirstLaunch) {
+            mMap = googleMap;
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            }
+
+            Location LastKnownLoc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (LastKnownLoc != null) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(LastKnownLoc.getLatitude(), LastKnownLoc.getLongitude()), 13));
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(LastKnownLoc.getLatitude(), LastKnownLoc.getLongitude()))
+                        .zoom(20)
+                        .bearing(90)
+                        .tilt(40)
+                        .build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                marker.position(new LatLng(LastKnownLoc.getLatitude(), LastKnownLoc.getLongitude()));
+                marker.title("You are here!");
+                marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.running_icon));
+                mMap.addMarker(marker);
+                onFirstLaunch = false;
+            }
+        }
     }
 
     public void zoomMapToUser(GoogleMap googleMap)
     {
+        marker.alpha(0.0f);
         mMap = googleMap;
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 13));
         CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -160,6 +233,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         marker.position(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()));
         marker.title("You are here!");
+        marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.running_icon));
         mMap.addMarker(marker);
         onFirstLaunch = false;
     }
@@ -175,9 +249,32 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
             } else {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
-                LatLng latLng = new LatLng(latitude, longitude); //you already have this
-                points.add(latLng); //added
+                LatLng latLng = new LatLng(latitude, longitude);
+
+                if(points != null && !points.isEmpty())
+                {
+                    marker.alpha(0.0f);
+                    LatLng LastLoc = points.get(points.size()-1);
+                    double lastLocLat = LastLoc.latitude;
+                    double lastLocLong = LastLoc.longitude;
+
+                    double newLocLat = latLng.latitude;
+                    double newLocLong = latLng.longitude;
+
+                    Location.distanceBetween(lastLocLat, lastLocLong, newLocLat, newLocLong, Distance);
+
+                    overallDistance += Distance[0];
+                    distanceTo1Place = Math.round(overallDistance * 10);
+
+                    distancetxt.setText(String.valueOf(distanceTo1Place + "m"));
+                }
+
+                points.add(latLng);
                 redrawLine();
+                marker.position(new LatLng(latLng.latitude, latLng.longitude));
+                marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.running_icon));
+                mMap.addMarker(marker);
+
             }
         }
 
@@ -198,15 +295,15 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
     };
 
     private void redrawLine() {
-        while (start) {
+        if (start) {
             mMap.clear();
-            PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
+            PolylineOptions options = new PolylineOptions().width(20).color(R.color.colorAccent).geodesic(true);
             for (int i = 0; i < points.size(); i++) {
                 LatLng point = points.get(i);
                 options.add(point);
             }
-            mMap.addMarker(marker);
             line = mMap.addPolyline(options);
+            //mMap.addMarker(marker);
         }
     }
 
@@ -274,14 +371,17 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
             case R.string.style_label_retro:
                 // Sets the retro style via raw resource JSON.
                 style = MapStyleOptions.loadRawResourceStyle(this, R.raw.mapstyle_retro);
+                timerTextView.setTextColor(getResources().getColor(R.color.txt_colour_3));
                 break;
             case R.string.style_label_night:
                 // Sets the night style via raw resource JSON.
                 style = MapStyleOptions.loadRawResourceStyle(this, R.raw.mapstyle_night);
+                timerTextView.setTextColor(getResources().getColor(R.color.txt_colour_3));
                 break;
             case R.string.style_label_grayscale:
                 // Sets the grayscale style via raw resource JSON.
                 style = MapStyleOptions.loadRawResourceStyle(this, R.raw.mapstyle_grayscale);
+                timerTextView.setTextColor(getResources().getColor(R.color.txt_colour_3));
                 break;
             case R.string.style_label_no_pois_no_transit:
                 // Sets the no POIs or transit style via JSON string.
@@ -309,8 +409,10 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
             case R.string.style_label_default:
                 // Removes previously set style, by setting it to null.
                 style = null;
+                timerTextView.setTextColor(getResources().getColor(R.color.app_background));
                 break;
             default:
+
                 return;
         }
         mMap.setMapStyle(style);

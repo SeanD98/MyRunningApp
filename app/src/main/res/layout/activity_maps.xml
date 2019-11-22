@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
@@ -10,7 +12,7 @@
         android:layout_height="match_parent"
         android:theme="@style/AppTheme" />
 
-    <Button
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/start_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,13 +24,14 @@
         android:layout_marginBottom="5dp"
         android:background="#359c5e"
         android:padding="8dp"
+        android:src="@android:drawable/ic_media_play"
         android:text="START"
-        android:visibility="visible"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        android:visibility="visible" />
 
-    <Button
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/stop_button"
-        android:layout_width="wrap_content"
+        android:layout_width="87dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
@@ -38,14 +41,75 @@
         android:layout_marginBottom="5dp"
         android:background="#359c5e"
         android:padding="8dp"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
         android:text="STOP"
-        android:visibility="invisible"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        android:visibility="invisible" />
 
     <TextView
+        android:id="@+id/run_timer"
+        android:layout_width="179dp"
+        android:layout_height="57dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="664dp"
+        android:layout_marginEnd="226dp"
+        android:layout_marginBottom="9dp"
+        android:text=""
+        android:textAppearance="@style/TextAppearance.AppCompat.Display2" />
+
+    <TextView
+        android:id="@+id/distance"
+        android:layout_width="164dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="240dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="7dp"
+        android:layout_marginBottom="672dp"
+        android:gravity="right"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display2" />
+
+    <ImageView
+        android:id="@+id/calorie_icon"
         android:layout_width="80dp"
-        android:layout_height="53dp"
-        android:text="TIME" />
+        android:layout_height="80dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="325dp"
+        android:layout_marginBottom="644dp"
+        android:foregroundGravity="fill_horizontal|center_vertical|fill_vertical"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/calorie_icon_orig"
+        tools:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/calorie_counter_txt"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="89dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="242dp"
+        android:layout_marginBottom="645dp"
+        android:gravity="center_horizontal|fill_horizontal|center_vertical|fill_vertical"
+        android:text="10k/cal"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:visibility="invisible"
+        tools:visibility="invisible" />
 
 
 </RelativeLayout>
