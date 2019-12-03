@@ -67,6 +67,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
     TextView distancetxt;
     ImageView calorieIcon;
     TextView calorieCounterTxt;
+    TextView calorieTitle;
     long startTime = 0;
     float[] Distance = new float[1];
     float overallDistance;
@@ -137,7 +138,9 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         timerTextView = (TextView) findViewById(R.id.run_timer_txtv);
         distancetxt = (TextView) findViewById(R.id.distance);
         calorieCounterTxt = (TextView) findViewById(R.id.calorie_counter_txt);
+        calorieTitle = (TextView) findViewById(R.id.calorie_title);
         speedTxt = (TextView) findViewById(R.id.speed_txt);
+
 
         points = new ArrayList<>();
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -173,9 +176,11 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                 timerHandler.postDelayed(timerRunnable, 0);
                 distancetxt.setText("0.00");
                 //speedTxt.setText(String.valueOf(Speed));
-                calorieCounterTxt.setVisibility(View.VISIBLE);
-                calorieCounterTxt.setText("0" + " k/cal");
-                //calorieIcon.setVisibility(View.VISIBLE);
+                if (DataController.getInstance(getApplicationContext()).calorieCounterState == 1) {
+                    calorieCounterTxt.setVisibility(View.VISIBLE);
+                    calorieCounterTxt.setText("0" + " k/cal");
+                    //calorieIcon.setVisibility(View.VISIBLE);
+                }
                 mMap.clear();
             }
         });
@@ -235,7 +240,38 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                 points.clear();
             }
         });
+
+        if (DataController.getInstance(getApplicationContext()).calorieCounterState == 0){
+            calorieCounterTxt.setVisibility(View.GONE);
+            calorieTitle.setVisibility(View.GONE);
+        }
+        if (DataController.getInstance(getApplicationContext()).calorieCounterState == 1){
+            calorieCounterTxt.setVisibility(View.VISIBLE);
+            calorieTitle.setVisibility(View.VISIBLE);
+        }
+
+
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (DataController.getInstance(getApplicationContext()).calorieCounterState == 0){
+            calorieCounterTxt.setVisibility(View.GONE);
+            calorieTitle.setVisibility(View.GONE);
+        }
+        if (DataController.getInstance(getApplicationContext()).calorieCounterState == 1){
+            calorieCounterTxt.setVisibility(View.VISIBLE);
+            calorieTitle.setVisibility(View.VISIBLE);
+        }
+
+
+
+
+
+    }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -319,27 +355,45 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                     double newLocLat = latLng.latitude;
                     double newLocLong = latLng.longitude;
                     Location.distanceBetween(lastLocLat, lastLocLong, newLocLat, newLocLong, Distance);
-                    Speed =
 
-                    overallDistance += Distance[0];
-                    distanceTo1Place = Math.round(overallDistance);
-                    Toast.makeText(getApplicationContext(), "Distance = " + distanceTo1Place, Toast.LENGTH_LONG).show();
+                    Speed = overallDistance += Distance[0];
+
+                    //convert distance to miles when measurementUnits switch is ON
+                    if (DataController.getInstance(getApplicationContext()).measurementUnits == 0){
+                        //If its OFF, units == meters
+                        distanceTo1Place = Math.round(overallDistance);
+                    } else if (DataController.getInstance(getApplicationContext()).measurementUnits == 1){
+                        //If its ON, units == miles
+                        distanceTo1Place = Math.round((overallDistance) * 0.000621371);
+                    }
+
+
                     Log.d("", "Distance =" + distanceTo1Place);
 
-                    distancetxt.setText((distanceTo1Place + "m"));
+                    if (DataController.getInstance(getApplicationContext()).measurementUnits == 0){
+                        distancetxt.setText((distanceTo1Place + "m"));
+                    }
+                    else if (DataController.getInstance(getApplicationContext()).measurementUnits == 1){
+                        distancetxt.setText((distanceTo1Place + " miles"));
+                    }
                 }
 
                 points.add(latLng);
                 redrawLine();
                 marker.position(new LatLng(latLng.latitude, latLng.longitude));
                 marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.running_icon));
+
                 mMap.addMarker(marker);
+
                 Speed = location.getSpeedAccuracyMetersPerSecond();
                 SpeedTo1Place = Math.round(Speed);
                 speedTxt.setText(String.valueOf(SpeedTo1Place));
-                caloriesBurned = distanceTo1Place * (0.06);
-                caloriesTo1Place = Math.round(caloriesBurned);
-                calorieCounterTxt.setText(String.valueOf(caloriesTo1Place));
+
+                if (DataController.getInstance(getApplicationContext()).calorieCounterState == 1) {
+                    caloriesBurned = distanceTo1Place * (0.06);
+                    caloriesTo1Place = Math.round(caloriesBurned);
+                    calorieCounterTxt.setText(String.valueOf(caloriesTo1Place));
+                }
             }
         }
 

@@ -44,7 +44,6 @@ public class RunsActivity extends AppCompatActivity {
     public void getRuns(){
         final int userID = DataController.getInstance(getApplicationContext()).DCuserID;
 
-
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -54,11 +53,15 @@ public class RunsActivity extends AppCompatActivity {
                         public void onGetRunsResponse(boolean success, String serverResponse) {
                             try {
                                 Gson gson = new GsonBuilder().create();
-                                Map<String, Object> responseMap = new HashMap<>();
-                                ArrayList<Map<String, Object>> runsListResponse = new ArrayList<Map<String, Object>>();
-                                Type map = new TypeToken<Map<String, Object>>() {
-                                }.getType();
+
+                                Map<String, Object> responseMap;
+
+                                ArrayList<Map<String, Object>> runsListResponse;
+
+                                Type map = new TypeToken<Map<String, Object>>() {}.getType();
+
                                 responseMap = gson.fromJson(serverResponse, map);
+
                                 runsListResponse = (ArrayList<Map<String, Object>>) responseMap.get("data");
 
                                 final ArrayList<String> runHeaders = new ArrayList<>();

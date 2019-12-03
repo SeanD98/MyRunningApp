@@ -112,7 +112,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //if username and password is empty
                     login();
-                    Toast.makeText(getApplicationContext(), "works", Toast.LENGTH_SHORT).show();
                     hideKeyboard();
                 }
         });

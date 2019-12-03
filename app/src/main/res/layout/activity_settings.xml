@@ -25,52 +25,35 @@
 
 
             <TableRow
-                android:id="@+id/settings_row_3"
+                android:id="@+id/measurement_units"
                 android:layout_width="fill_parent"
                 android:minHeight="50dp">
+
                 <TextView
+                    android:layout_width="272dp"
                     android:layout_column="0"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="10dp"
                     android:padding="3dp"
                     android:text="Measurement Units"
                     android:textAppearance="@android:style/TextAppearance.Small"
-                    android:textColor="@color/txt_colour_3"/>
+                    android:textColor="@color/txt_colour_3" />
+
+                <ToggleButton
+                    android:id="@+id/measurement_unit_toggle"
+                    android:layout_width="10dp"
+                    android:layout_height="match_parent"
+                    android:checked="false"
+                    android:text="ToggleButton"
+                    android:textOff="Meters"
+                    android:textOn="Miles" />
+
+
             </TableRow>
 
 
             <TableRow
-                android:id="@+id/settings_row"
-                android:layout_width="fill_parent"
-                android:minHeight="50dp">
-                <TextView
-                    android:layout_column="0"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="10dp"
-                    android:padding="3dp"
-                    android:text="Measurement Units"
-                    android:textAppearance="@android:style/TextAppearance.Small"
-                    android:textColor="@color/txt_colour_3"/>
-            </TableRow>
-
-
-            <TableRow
-                android:id="@+id/settings_row_5"
-                android:layout_width="fill_parent"
-                android:minHeight="50dp">
-                <TextView
-                    android:layout_column="0"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="10dp"
-                    android:padding="3dp"
-                    android:text="Measurement Units"
-                    android:textAppearance="@android:style/TextAppearance.Small"
-                    android:textColor="@color/txt_colour_3"/>
-            </TableRow>
-
-
-            <TableRow
-                android:id="@+id/settings_row_2"
+                android:id="@+id/calorie_counter_txt_settings"
                 android:layout_width="fill_parent"
                 android:minHeight="50dp">
                 <TextView
@@ -81,14 +64,17 @@
                     android:text="Calorie Counter"
                     android:textAppearance="@android:style/TextAppearance.Small"
                     android:textColor="@color/txt_colour_3"/>
+
                 <Switch
-                    android:id="@+id/settings_switch"
+                    android:id="@+id/calorie_counter_switch_settings"
                     android:layout_width="wrap_content"
                     android:layout_height="54dp"
+                    android:checked="true"
                     android:layout_gravity="center_vertical|right"
+                    android:showText="false"
                     android:textColorLink="@color/colorAccent"
                     android:textSize="24dp"
-                    tools:checked="false"/>
+                    tools:checked="false" />
             </TableRow>
 
 
@@ -106,7 +92,7 @@
                     android:textAppearance="@android:style/TextAppearance.Small"
                     android:textColor="@color/txt_colour_3"/>
                 <Switch
-                    android:id="@+id/settings_switch_2"
+                    android:id="@+id/auto_login_switch_settings"
                     android:layout_width="wrap_content"
                     android:layout_height="54dp"
                     android:layout_gravity="center_vertical|right"
