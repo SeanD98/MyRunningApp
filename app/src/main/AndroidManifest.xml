@@ -36,8 +36,10 @@
         <activity android:name=".Activities.AddFriendActivity"/>
         <activity android:name=".Activities.FriendsActivity"/>
         <activity android:name=".Activities.SettingsActivity"/>
+        <activity android:name=".Activities.RunsActivity"/>
 
         <activity android:name=".Utils.StyledMapActivity" />
+        <activity android:name=".Utils.DataController"/>
     </application>
 
 </manifest>

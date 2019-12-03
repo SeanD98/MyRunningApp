@@ -16,4 +16,7 @@
     <item
         android:id="@+id/settings_menu_item"
         android:title="Settings" />
+    <item
+        android:id="@+id/runs_menu_item"
+        android:title="Runs" />
 </menu>

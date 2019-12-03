@@ -28,7 +28,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.myrunningapp.Activities.FriendsActivity;
+import com.example.myrunningapp.Activities.RunsActivity;
 import com.example.myrunningapp.Activities.SettingsActivity;
+import com.example.myrunningapp.Network.MyHTTPClient;
 import com.example.myrunningapp.R;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -43,17 +45,25 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import org.w3c.dom.Text;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 
 public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     Handler timerHandler = new Handler();
     TextView timerTextView;
+    TextView speedTxt;
     TextView distancetxt;
     ImageView calorieIcon;
     TextView calorieCounterTxt;
@@ -61,6 +71,13 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
     float[] Distance = new float[1];
     float overallDistance;
     float distanceTo1Place;
+    float Speed;
+    float SpeedTo1Place;
+    double caloriesBurned;
+    double caloriesTo1Place;
+
+    String json;
+    ArrayList<LatLng> gotPoints;
 
     Runnable timerRunnable = new Runnable() {
         @Override
@@ -74,7 +91,6 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
             timerHandler.postDelayed(this, 500);
         }
     };
-
 
     private GoogleMap mMap;
     private LocationRequest mLocationRequest;
@@ -94,8 +110,8 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
     private static final String TAG = StyledMapActivity.class.getSimpleName();
     private static final String SELECTED_STYLE = "selected_style";
     private static final long INTERVAL = 1000 * 60 * 1; //1 minute
-    private static final long FASTEST_INTERVAL = 1000 * 60 * 1; // 1 minute
-    private static final float SMALLEST_DISPLACEMENT = 0.25F; //quarter of a meter
+    private static final long FASTEST_INTERVAL = 1000 * 60 * 1;
+    private static final float SMALLEST_DISPLACEMENT = 0.25F;
     private static final long LOCATION_REFRESH_TIME = 300;
     private static final float LOCATION_REFRESH_DISTANCE = 10;
     public static final int PERMISSIONS_REQUEST_LOCATION = 99;
@@ -110,7 +126,6 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
             R.string.style_label_default,
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,10 +134,10 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
         setContentView(R.layout.activity_maps);
 
-        timerTextView = (TextView) findViewById(R.id.run_timer);
+        timerTextView = (TextView) findViewById(R.id.run_timer_txtv);
         distancetxt = (TextView) findViewById(R.id.distance);
         calorieCounterTxt = (TextView) findViewById(R.id.calorie_counter_txt);
-        calorieIcon = (ImageView) findViewById(R.id.calorie_icon);
+        speedTxt = (TextView) findViewById(R.id.speed_txt);
 
         points = new ArrayList<>();
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -157,9 +172,10 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                 startTime = System.currentTimeMillis();
                 timerHandler.postDelayed(timerRunnable, 0);
                 distancetxt.setText("0.00");
+                //speedTxt.setText(String.valueOf(Speed));
                 calorieCounterTxt.setVisibility(View.VISIBLE);
                 calorieCounterTxt.setText("0" + " k/cal");
-                calorieIcon.setVisibility(View.VISIBLE);
+                //calorieIcon.setVisibility(View.VISIBLE);
                 mMap.clear();
             }
         });
@@ -167,16 +183,58 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(StyledMapActivity.this);
+                dialog.setMessage("Save this run?");
+                dialog.setTitle("Save");
+                dialog.setIcon(R.drawable.thumbnail);
+
+                dialog.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //storeRuns();
+                        stopButton.hide();
+                        startButton.show();
+                        start = false;
+                        stop = true;
+                        timerHandler.removeCallbacks(timerRunnable);
+                        //overallDistance = 0;
+                        calorieCounterTxt.setText("");
+                        distancetxt.setText("");
+                        timerTextView.setText("");
+                        speedTxt.setText("");
+                        points.clear();
+                        //show load screen
+                    }
+                });
+                dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        stopButton.hide();
+                        startButton.show();
+                        start = false;
+                        stop = true;
+                        timerHandler.removeCallbacks(timerRunnable);
+                        overallDistance = 0;
+                        calorieCounterTxt.setText("");
+                        distancetxt.setText("");
+                        timerTextView.setText("");
+                        speedTxt.setText("");
+                        points.clear();
+                    }
+                });
+                AlertDialog alert = dialog.create();
+                alert.show();
+
                 stopButton.hide();
                 startButton.show();
                 start = false;
                 stop = true;
+                storeRuns();
                 timerHandler.removeCallbacks(timerRunnable);
                 overallDistance = 0;
                 points.clear();
             }
         });
-
     }
 
     @Override
@@ -220,7 +278,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     public void zoomMapToUser(GoogleMap googleMap)
     {
-        marker.alpha(0.0f);
+        //marker.alpha(0.0f);
         mMap = googleMap;
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 13));
         CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -253,20 +311,22 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
 
                 if(points != null && !points.isEmpty())
                 {
-                    marker.alpha(0.0f);
+                    //marker.alpha(0.0f);
                     LatLng LastLoc = points.get(points.size()-1);
                     double lastLocLat = LastLoc.latitude;
                     double lastLocLong = LastLoc.longitude;
 
                     double newLocLat = latLng.latitude;
                     double newLocLong = latLng.longitude;
-
                     Location.distanceBetween(lastLocLat, lastLocLong, newLocLat, newLocLong, Distance);
+                    Speed =
 
                     overallDistance += Distance[0];
-                    distanceTo1Place = Math.round(overallDistance * 10);
+                    distanceTo1Place = Math.round(overallDistance);
+                    Toast.makeText(getApplicationContext(), "Distance = " + distanceTo1Place, Toast.LENGTH_LONG).show();
+                    Log.d("", "Distance =" + distanceTo1Place);
 
-                    distancetxt.setText(String.valueOf(distanceTo1Place + "m"));
+                    distancetxt.setText((distanceTo1Place + "m"));
                 }
 
                 points.add(latLng);
@@ -274,7 +334,12 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                 marker.position(new LatLng(latLng.latitude, latLng.longitude));
                 marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.running_icon));
                 mMap.addMarker(marker);
-
+                Speed = location.getSpeedAccuracyMetersPerSecond();
+                SpeedTo1Place = Math.round(Speed);
+                speedTxt.setText(String.valueOf(SpeedTo1Place));
+                caloriesBurned = distanceTo1Place * (0.06);
+                caloriesTo1Place = Math.round(caloriesBurned);
+                calorieCounterTxt.setText(String.valueOf(caloriesTo1Place));
             }
         }
 
@@ -337,6 +402,10 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         if (item.getItemId() == R.id.settings_menu_item) {
             Intent goToSettings = new Intent(this, SettingsActivity.class);
             startActivity(goToSettings);
+        }
+        if (item.getItemId() == R.id.runs_menu_item) {
+            Intent goToRuns = new Intent(this, RunsActivity.class);
+            startActivity(goToRuns);
         }
         return true;
     }
@@ -407,7 +476,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                         "]");
                 break;
             case R.string.style_label_default:
-                // Removes previously set style, by setting it to null.
+                //Removes previously set style, by setting it to null.
                 style = null;
                 timerTextView.setTextColor(getResources().getColor(R.color.app_background));
                 break;
@@ -418,4 +487,43 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         mMap.setMapStyle(style);
     }
 
+    public void storeRuns()
+    {
+        json = new Gson().toJson(points);
+        final String time = String.valueOf(timerTextView.getText());
+        final String distance = String.valueOf(distanceTo1Place);
+        final String speed = String.valueOf(SpeedTo1Place);
+        final int _userID = DataController.getInstance(getApplicationContext()).DCuserID;
+        final ArrayList<LatLng> runObj = gotPoints; //initisaltion which the http.post runs below uses
+
+        final String userID = Integer.toString(_userID);
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    MyHTTPClient.postRuns(time, distance, speed, userID, json, new MyHTTPClient.APIPostRunsCallback() {
+                        @Override
+                        public void onPostRunsResponse(String serverResponse) {
+                            try {
+
+                                Gson gson = new GsonBuilder().create();
+                                Map<String, String> responseMap = new HashMap<>();
+                                Type map = new TypeToken<Map<String, String>>() {}.getType();
+                                responseMap = gson.fromJson(serverResponse, map);
+
+                                String success = responseMap.get("success");
+                                String msg = responseMap.get("msg");
+                            } catch (Exception e){
+                                Log.e("", e.toString());
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    Log.e("", e.toString());
+                }
+            }
+        });
+        thread.start();
+    }
 }

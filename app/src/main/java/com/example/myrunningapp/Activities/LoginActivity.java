@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.myrunningapp.Network.MyHTTPClient;
 import com.example.myrunningapp.R;
 import com.example.myrunningapp.Utils.AppUtils;
+import com.example.myrunningapp.Utils.DataController;
 import com.example.myrunningapp.Utils.StyledMapActivity;
 
 import org.json.JSONObject;
@@ -178,6 +179,9 @@ public class LoginActivity extends AppCompatActivity {
                                     } else {
 
                                         Integer userID = (Integer)data.get("userid");
+                                        if (userID != null) {
+                                            DataController.getInstance(getApplicationContext()).DCuserID = userID;
+                                        }
                                         String userName = data.get("username").toString();
 
 

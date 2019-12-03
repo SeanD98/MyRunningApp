@@ -44,6 +44,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.message.BasicHeaderElement;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -60,6 +61,8 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.example.myrunningapp.Utils.Constants;
+import com.example.myrunningapp.Utils.DataController;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
@@ -69,12 +72,11 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class MyHTTPClient {
 
+    public static Context mContext;
     public static String Username = "";
     public static String Password = "";
     private static DefaultHttpClient client = MyHTTPClient.getDefaultHttpClient();
     private static final String TAG = MyHTTPClient.class.getSimpleName();
-//    private static final int TIME_OUT_CONNECTION = 30000;
-//    private static final int TIME_OUT_SOCKET = 30000;
 
     public static void setCredentials(String username, String password) {
         MyHTTPClient.client = getDefaultHttpClient();
@@ -85,9 +87,6 @@ public class MyHTTPClient {
 
     public static DefaultHttpClient getDefaultHttpClient() {
         HttpParams params = new BasicHttpParams();
-//        HttpConnectionParams.setConnectionTimeout(params,
-//                MyHTTPClient.TIME_OUT_CONNECTION);
-//        HttpConnectionParams.setSoTimeout(params, MyHTTPClient.TIME_OUT_SOCKET);
         HttpConnectionParams.setSocketBufferSize(params, 8192);
         SchemeRegistry schemeRegistry = new SchemeRegistry();
         KeyStore trustStore;
@@ -313,7 +312,112 @@ public class MyHTTPClient {
     }
 
 
+    public interface APIGetRunsCallback{
+        void onGetRunsResponse(boolean success, String serverResponse);
+    }
+
+    public static void getRuns(final APIGetRunsCallback callback) throws Exception {
+        MyHTTPClient.setCredentials(Username, Password);
+        String serverResponse = "";
+        int status;
+        Context ctx;
+        int userID = DataController.getInstance(mContext).DCuserID;
+
+        try {
+            HttpGet httpget = new HttpGet(buildUrl(Constants.API_GET_RUNS) + userID);
+
+            HttpResponse response = MyHTTPClient.client.execute(httpget);
+            status = response.getStatusLine().getStatusCode();
+            HttpEntity entity = response.getEntity();
+            StringBuffer result = null;
+
+            if (status == HttpStatus.SC_OK){
+                if (entity != null){
+                    InputStream in = entity.getContent();
+                    serverResponse = MyHTTPClient.convertStreamToString(in);
+                }
+            } else if (status == HttpStatus.SC_UNAUTHORIZED){
+                serverResponse = "Unauthorised";
+
+                if(status == HttpStatus.SC_OK){
+                    if(entity != null){
+                        InputStream in = entity.getContent();
+                        serverResponse = MyHTTPClient.convertStreamToString(in);
+                    }
+                } else {
+                    serverResponse = "Not found";
+                }
+            } else if(status == HttpStatus.SC_NOT_FOUND){
+                serverResponse = "Not found";
+            }
+        } catch (IllegalArgumentException e){
+            throw new IllegalArgumentException(e.getMessage());
+        } catch (ClientProtocolException e){
+            Log.e(TAG, "Client Protocol Exception: " + e.getMessage());
+            throw new ClientProtocolException("The server failed to respond with a valid HTTP Response");
+        } catch (IOException e){
+            Log.e(TAG, "IOException: " + e.getMessage());
+            if (e.getMessage().equals(null)) {
+                if (e instanceof SocketTimeoutException) {
+                    throw new IOException("Socket was closed unexpectedly, ensure server is running");
+                } else {
+                    throw new IOException("Socket failed to respond with valid http response");
+                }
+            } else {
+                throw new IOException(e.getMessage());
+            }
+        }  finally {
+            System.gc();
+        }
+        callback.onGetRunsResponse(true, serverResponse);
+    }
 
 
+    public interface APIPostRunsCallback{
+        void onPostRunsResponse(String result);
+    }
 
+    public static void postRuns(final String time, final String distance, final String speed, final String userID, final String runObj, final APIPostRunsCallback callback) throws Exception {
+        MyHTTPClient.setCredentials(Username, Password);
+        HttpPost post = new HttpPost(buildUrl(Constants.API_STORE_RUNS));
+
+        JsonObject json = new JsonObject();
+            json.addProperty("time", time);
+            json.addProperty("distance", distance);
+            json.addProperty("speed", speed);
+            json.addProperty("userID", userID);
+            json.addProperty("runObj", runObj);
+
+            String jsonString = json.toString();
+
+            post.setHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
+
+            List<NameValuePair> data = new ArrayList<NameValuePair>();
+            data.add(new BasicNameValuePair("time", time));
+            data.add(new BasicNameValuePair("distance", distance));
+            data.add(new BasicNameValuePair("speed", speed));
+            data.add(new BasicNameValuePair("userID", userID));
+            data.add(new BasicNameValuePair("runObj", runObj));
+            post.setEntity(new UrlEncodedFormEntity(data));
+
+            HttpResponse response = client.execute(post);
+            System.out.println("Response Code: " + response.getStatusLine().getStatusCode());
+
+            int status;
+            status = response.getStatusLine().getStatusCode();
+            HttpEntity entity = response.getEntity();
+
+            StringBuffer result = null;
+
+            BufferedReader rd = new BufferedReader
+                    (new InputStreamReader(response.getEntity().getContent()));
+
+            result = new StringBuffer();
+            String line = "";
+            while ((line = rd.readLine()) != null){
+                result.append(line);
+            }
+
+            callback.onPostRunsResponse(result.toString());
+    }
 }
