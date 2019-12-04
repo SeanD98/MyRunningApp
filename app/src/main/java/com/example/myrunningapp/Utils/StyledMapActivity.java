@@ -356,7 +356,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                     double newLocLong = latLng.longitude;
                     Location.distanceBetween(lastLocLat, lastLocLong, newLocLat, newLocLong, Distance);
 
-                    Speed = overallDistance += Distance[0];
+                    Speed = overallDistance += Distance[0]; //this it?
 
                     //convert distance to miles when measurementUnits switch is ON
                     if (DataController.getInstance(getApplicationContext()).measurementUnits == 0){

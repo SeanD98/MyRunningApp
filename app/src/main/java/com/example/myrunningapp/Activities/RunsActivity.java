@@ -2,6 +2,7 @@ package com.example.myrunningapp.Activities;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import com.example.myrunningapp.Models.Runs;
 import com.example.myrunningapp.Network.MyHTTPClient;
 import com.example.myrunningapp.R;
 import com.example.myrunningapp.Utils.DataController;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -28,8 +30,8 @@ public class RunsActivity extends AppCompatActivity {
     ExpandableListView runsListView;
     List<Map<String, Object>> runsList = new ArrayList<>();
     RunsAdapter mRunsAdapter;
-    public String run = "";
-
+    ExpandableListAdapter runsAdapter;
+    HashMap<String, List<String>> listDataChild;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class RunsActivity extends AppCompatActivity {
     }
 
     public void getRuns(){
+
         final int userID = DataController.getInstance(getApplicationContext()).DCuserID;
 
         Thread thread = new Thread(new Runnable() {
@@ -55,33 +58,76 @@ public class RunsActivity extends AppCompatActivity {
                                 Gson gson = new GsonBuilder().create();
 
                                 Map<String, Object> responseMap;
-
-                                ArrayList<Map<String, Object>> runsListResponse;
-
                                 Type map = new TypeToken<Map<String, Object>>() {}.getType();
-
                                 responseMap = gson.fromJson(serverResponse, map);
 
-                                runsListResponse = (ArrayList<Map<String, Object>>) responseMap.get("data");
+                                Map<String, Object> responseData;
+                                responseData = (Map<String, Object>) responseMap.get("data");
+
+                                ArrayList<Map<String, Object>> runRes;
+                                runRes = (ArrayList<Map<String, Object>>) responseData.get("runs");
+
+                                for(int i = 0; i < runRes.size(); i++) {
+                                    Map<String, Object> run = new HashMap<>();
+                                    run.put("distance", runRes.get(i).get("distance"));
+                                    run.put("speed", runRes.get(i).get("speed"));
+                                    run.put("time", runRes.get(i).get("time"));
+                                    run.put("runID", runRes.get(i).get("runID"));
+                                    run.put("date", runRes.get(i).get("date"));
+                                    run.put("runObj", convertToList(runRes.get(i).get("runObj").toString()));
+
+                                    runsList.add(run);
+                                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                                 final ArrayList<String> runHeaders = new ArrayList<>();
-
-                                if (runsListResponse != null) {
-                                    for (int i = 0; i < runsListResponse.size(); i++) {
-                                        runHeaders.add(runsListResponse.get(i).get("time").toString());
+                                if(runsList != null) {
+                                    for(int i = 0; i < runsList.size(); i++) {
+                                        runHeaders.add(runsList.get(i).get("date").toString());
                                     }
                                 }
 
-                                final ArrayList<Map<String, Object>> finalRunsListResponse = runsListResponse;
+                                Map<String, Object> runData = new HashMap<>();
+
+                                //Adding child data
+                                List<String> top250 = new ArrayList<String>();
+                                top250.add("123");
+                                top250.add("1234");
+                                top250.add("12345");
+                                top250.add("123456");
+                                top250.add("1234567");
+                                top250.add("12345678");
+                                top250.add("123456789");
+
+                                listDataChild.put(runHeaders.get(0), top250);
+
+
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        mRunsAdapter = new RunsAdapter(getApplicationContext(), runHeaders, finalRunsListResponse);
+                                        mRunsAdapter = new RunsAdapter(getApplicationContext(), runHeaders, runsList, listDataChild);
                                         runsListView.setAdapter(mRunsAdapter);
                                     }
                                 });
                             } catch (Exception e){
-                                Log.e("", e.toString());
+                                Log.e("Failed Parsing Runs", e.toString());
                             }
                         }
                     });
@@ -91,5 +137,15 @@ public class RunsActivity extends AppCompatActivity {
             }
         });
         thread.start();
+    }
+
+    public ArrayList<LatLng> convertToList(String points)
+    {
+        ArrayList<LatLng> pointsList = new ArrayList<>();
+        Type arrayList = new TypeToken<ArrayList<LatLng>>(){
+        }.getType();
+
+        pointsList = new Gson().fromJson(points, arrayList);
+        return pointsList;
     }
 }

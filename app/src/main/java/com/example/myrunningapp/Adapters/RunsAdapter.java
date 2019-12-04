@@ -9,21 +9,23 @@ import android.widget.TextView;
 
 import com.example.myrunningapp.R;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class RunsAdapter extends BaseExpandableListAdapter {
 
     private List<String> mRunsList;
+    private HashMap<String, List<String>> childData;
     private Context mContext;
     private List<Map<String, Object>> mRuns;
 
-    public RunsAdapter (Context context, List<String> headers, List <Map<String, Object>> runs){
+    public RunsAdapter (Context context, List<String> headers, List <Map<String, Object>> runs, HashMap<String, List<String>> childs){
         mRunsList = headers;
+        childData = childs;
         mContext = context;
         mRuns = runs;
     }
-
 
     @Override
     public int getGroupCount() {
@@ -36,7 +38,7 @@ public class RunsAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return 1;
+        return this.childData.get(this.mRunsList.get(groupPosition)).size();
     }
 
     @Override
@@ -50,7 +52,8 @@ public class RunsAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return mRunsList.get(groupPosition);
+        return this.childData.get(this.mRunsList.get(groupPosition))
+                .get(childPosition);
     }
 
     @Override
@@ -60,7 +63,7 @@ public class RunsAdapter extends BaseExpandableListAdapter {
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return groupPosition;
+        return childPosition;
     }
 
     @Override
@@ -85,11 +88,22 @@ public class RunsAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        return null;
+        final String childText = (String) getChild(groupPosition, childPosition);
+
+        if (convertView != null){
+            LayoutInflater layoutInflater = (LayoutInflater) this.mContext
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.list_item, null);
+        }
+
+        TextView txtListChild = (TextView) convertView.findViewById(R.id.lblChildData);
+        txtListChild.setText(childText);
+
+        return convertView;
     }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
+        return true;
     }
 }

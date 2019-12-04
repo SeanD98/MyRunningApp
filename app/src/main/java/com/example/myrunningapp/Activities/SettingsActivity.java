@@ -36,29 +36,12 @@ public class SettingsActivity extends AppCompatActivity {
             //if state is ON upon opening
             measurementUnits.setChecked(true);
         }
-//
-//        if (measurementUnits.isEnabled()){
-//            //switch is ON so state = Miles
-//            DataController.getInstance(getApplicationContext()).measurementUnits = 0;
-//        } else {
-//            //Switch if OFF so state = Meters
-//            DataController.getInstance(getApplicationContext()).measurementUnits = 1;
-//        }
 
         if (DataController.getInstance(getApplicationContext()).calorieCounterState == 1){
             calorieCounter.setChecked(true);
         } else if (DataController.getInstance(getApplicationContext()).calorieCounterState == 0){
             calorieCounter.setChecked(false);
         }
-
-        //if switch is checked
-//        if (calorieCounter.isEnabled()){
-//            DataController.getInstance(getApplicationContext()).calorieCounterState = 1;
-//        }
-        //if switch is disabled
-//        if (!calorieCounter.isEnabled()){
-//            DataController.getInstance(getApplicationContext()).calorieCounterState = 0;
-//        }
 
         if (autoLogin.isEnabled()){
             DataController.getInstance(getApplicationContext()).autoLoginState = 1;
@@ -101,12 +84,6 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-//        if (DataController.getInstance(getApplicationContext()).calorieCounterState == 0){
-//            calorieCounter.setChecked(false);
-//        }
-//        if (DataController.getInstance(getApplicationContext()).calorieCounterState == 1){
-//            calorieCounter.setChecked(true);
-//        }
     }
 
     @Override
