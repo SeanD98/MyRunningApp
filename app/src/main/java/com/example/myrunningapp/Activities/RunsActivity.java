@@ -31,7 +31,7 @@ public class RunsActivity extends AppCompatActivity {
     List<Map<String, Object>> runsList = new ArrayList<>();
     RunsAdapter mRunsAdapter;
     ExpandableListAdapter runsAdapter;
-    HashMap<String, List<String>> listDataChild;
+    HashMap<String, List<String>> listDataChild = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,50 +79,32 @@ public class RunsActivity extends AppCompatActivity {
                                     runsList.add(run);
                                 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                                 final ArrayList<String> runHeaders = new ArrayList<>();
+                                final ArrayList<String> childData = new ArrayList<>();
                                 if(runsList != null) {
                                     for(int i = 0; i < runsList.size(); i++) {
                                         runHeaders.add(runsList.get(i).get("date").toString());
                                     }
                                 }
-
-                                Map<String, Object> runData = new HashMap<>();
-
-                                //Adding child data
-                                List<String> top250 = new ArrayList<String>();
-                                top250.add("123");
-                                top250.add("1234");
-                                top250.add("12345");
-                                top250.add("123456");
-                                top250.add("1234567");
-                                top250.add("12345678");
-                                top250.add("123456789");
-
-                                listDataChild.put(runHeaders.get(0), top250);
+//
+//                                Map<String, Object> runData = new HashMap<>();
+//                                //Adding child data
+//                                List<String> top250 = new ArrayList<String>();
+//                                top250.add("123");
+//                                top250.add("1234");
+//                                top250.add("12345");
+//                                top250.add("123456");
+//                                top250.add("1234567");
+//                                top250.add("12345678");
+//                                top250.add("123456789");
+//
+//                                listDataChild.put(runHeaders.get(0), top250);
 
 
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        mRunsAdapter = new RunsAdapter(getApplicationContext(), runHeaders, runsList, listDataChild);
+                                        mRunsAdapter = new RunsAdapter(getApplicationContext(), runHeaders, runsList);
                                         runsListView.setAdapter(mRunsAdapter);
                                     }
                                 });

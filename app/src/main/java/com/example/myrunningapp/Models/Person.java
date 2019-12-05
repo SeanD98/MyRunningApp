@@ -5,7 +5,6 @@ public class Person {
     public Person(){
 
     }
-
     public Integer id;
     public String username;
 
