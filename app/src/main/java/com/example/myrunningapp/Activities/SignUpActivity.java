@@ -1,7 +1,12 @@
 package com.example.myrunningapp.Activities;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myrunningapp.Network.MyHTTPClient;
 import com.example.myrunningapp.R;
@@ -22,7 +28,12 @@ import org.json.JSONObject;
 import java.util.Map;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import safety.com.br.android_shake_detector.core.ShakeCallback;
+import safety.com.br.android_shake_detector.core.ShakeDetector;
+import safety.com.br.android_shake_detector.core.ShakeOptions;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -33,15 +44,39 @@ public class SignUpActivity extends AppCompatActivity {
     TextView welcomeTextSignup;
     TextView subTextSignup;
     TextView logInButton;
+    TextView errorMessage;
 
     Button signUpButton;
 
     ImageView logo_signup;
 
+    private ShakeDetector shakeDetector;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+
+        ShakeOptions options = new ShakeOptions()
+                .background(true)
+                .interval(1000)
+                .shakeCount(2)
+                .sensibility(2.0f);
+
+        this.shakeDetector = new ShakeDetector(options).start(this, new ShakeCallback() {
+            @Override
+            public void onShake() {
+                clearTextFields();
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+                    //deprecated in API 26
+                    v.vibrate(500);
+                }
+            }
+        });
 
         //Animations
         Animation slide_up = AnimationUtils.loadAnimation(getApplicationContext(),
@@ -61,6 +96,7 @@ public class SignUpActivity extends AppCompatActivity {
         signup_pass = (EditText) findViewById(R.id.txt_pass_sign_up);
         signup_pass_confirm = (EditText) findViewById(R.id.txt_pass_confirm);
 
+        errorMessage = (TextView) findViewById(R.id.errorMsg_txt);
         welcomeTextSignup = (TextView) findViewById(R.id.txt_signup);
         subTextSignup = (TextView) findViewById(R.id.txt_sign_up_screen);
         logInButton = (TextView) findViewById(R.id.log_in_bttn_txt);
@@ -72,7 +108,6 @@ public class SignUpActivity extends AppCompatActivity {
         //Intents
         final Intent goToLogin = new Intent(this, LoginActivity.class);
         final Intent goToHome = new Intent(this, HomeActivity.class);
-
 
         //Animation initialisations
         logo_signup.startAnimation(zoom_in);
@@ -90,6 +125,7 @@ public class SignUpActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                errorMessage.setText("");
                 signUp();
             }
         });
@@ -107,6 +143,12 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
+    public void clearTextFields(){
+        email_signup.setText("");
+        signup_pass.setText("");
+        signup_pass_confirm.setText("");
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         finish();
@@ -116,17 +158,20 @@ public class SignUpActivity extends AppCompatActivity {
     public void signUp() {
         final Animation shake = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.shake);
-        //Get text from textboxes
+
         final String username = email_signup.getText().toString();
+        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
         final String password = signup_pass.getText().toString();
+        final String confirmedPass = signup_pass_confirm.getText().toString();
 
         MyHTTPClient.Username = username;
         MyHTTPClient.Password = password;
 
-        if (username.isEmpty() || password.isEmpty()) {
-            email_signup.startAnimation(shake);
-            signup_pass.startAnimation(shake);
-        } else {
+        if (!username.matches(emailPattern)){
+            Toast.makeText(this, "Please enter a valid username and password", Toast.LENGTH_LONG).show();
+            errorMessage.setText("Invalid email address");
+        }
+        if (username.matches(emailPattern) && password.matches(confirmedPass) && password.length() > 0) {
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -146,8 +191,12 @@ public class SignUpActivity extends AppCompatActivity {
                                             public void run() {
                                                 email_signup.setText("");
                                                 signup_pass.setText("");
+                                                signup_pass_confirm.setText("");
                                                 email_signup.startAnimation(shake);
                                                 signup_pass.startAnimation(shake);
+                                                signup_pass_confirm.startAnimation(shake);
+                                                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                                                v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
                                             }
                                         });
                                     } else {
@@ -165,10 +214,43 @@ public class SignUpActivity extends AppCompatActivity {
                         });
                     } catch (Exception e) {
                         e.printStackTrace();
+                        AlertDialog.Builder LocationDisabledDialog = new AlertDialog.Builder(SignUpActivity.this);
+                        LocationDisabledDialog.setTitle("No Network Connection");
+                        LocationDisabledDialog.setMessage("Please ensure the device is connected to the internet");
+                        LocationDisabledDialog.setIcon(R.drawable.thumbnail);
+                        LocationDisabledDialog.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        });
+                        AlertDialog alert = LocationDisabledDialog.create();
+                        alert.show();
                     }
                 }
             });
             thread.start();
+        } else {
+            if (username.matches(emailPattern) && !password.matches(confirmedPass)){
+                //if email is correct but passwords are wrong
+                errorMessage.setText("Passwords don't match");
+                signup_pass.setText("");
+                signup_pass_confirm.setText("");
+                signup_pass.startAnimation(shake);
+                signup_pass_confirm.startAnimation(shake);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+            } else if (!username.matches(emailPattern)) {
+                //if email is incorrect
+                errorMessage.setText("Invalid email address");
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+            } else if (!username.matches(emailPattern) && !password.matches(confirmedPass)){
+                //email and password are incorrect
+                errorMessage.setText("Invalid email and password");
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.myrunningapp.Activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.http.RequestQueue;
 import android.os.Bundle;
@@ -14,14 +15,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myrunningapp.Adapters.RunsAdapter;
 import com.example.myrunningapp.Network.MyHTTPClient;
 import com.example.myrunningapp.R;
 import com.example.myrunningapp.Models.Person;
 import com.example.myrunningapp.Adapters.PersonAdapter;
 import com.example.myrunningapp.Utils.AppUtils;
+import com.example.myrunningapp.Utils.DataController;
 import com.google.android.gms.common.api.Response;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -40,7 +45,7 @@ import java.util.Map;
 public class FriendsActivity extends AppCompatActivity {
 
     ExpandableListView friendsListView;
-    List<Map<String, Object>> FriendsList = new ArrayList<>();
+    List<Map<String, Object>> runsList = new ArrayList<>();
     PersonAdapter mPersonAdapter;
     public String friend = "";
 
@@ -93,6 +98,18 @@ public class FriendsActivity extends AppCompatActivity {
                     });
                 } catch (Exception e) {
                     e.printStackTrace();
+                    AlertDialog.Builder LocationDisabledDialog = new AlertDialog.Builder(FriendsActivity.this);
+                    LocationDisabledDialog.setTitle("No Network Connection");
+                    LocationDisabledDialog.setMessage("Cannot retrieve friends at the moment. \nPlease ensure the device is connected to the internet");
+                    LocationDisabledDialog.setIcon(R.drawable.thumbnail);
+                    LocationDisabledDialog.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    });
+                    AlertDialog alert = LocationDisabledDialog.create();
+                    alert.show();
                 }
             }
         });

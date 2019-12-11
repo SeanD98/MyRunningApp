@@ -123,5 +123,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/errorMsg_txt"
+        android:layout_width="222dp"
+        android:layout_height="25dp"
+        android:gravity="right"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toTopOf="@+id/bttn_signup"
+        app:layout_constraintEnd_toEndOf="@+id/txt_pass_confirm"
+        app:layout_constraintHorizontal_bias="0.981"
+        app:layout_constraintStart_toEndOf="@+id/log_in_bttn_txt"
+        app:layout_constraintTop_toBottomOf="@+id/txt_pass_confirm"
+        app:layout_constraintVertical_bias="0.216" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,10 +1,12 @@
 package com.example.myrunningapp.Activities;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myrunningapp.Adapters.RunsAdapter;
@@ -74,7 +76,7 @@ public class RunsActivity extends AppCompatActivity {
                                     run.put("time", runRes.get(i).get("time"));
                                     run.put("runID", runRes.get(i).get("runID"));
                                     run.put("date", runRes.get(i).get("date"));
-                                    run.put("runObj", convertToList(runRes.get(i).get("runObj").toString()));
+                                    //run.put("runObj", convertToList(runRes.get(i).get("runObj").toString()));
 
                                     runsList.add(run);
                                 }
@@ -83,23 +85,12 @@ public class RunsActivity extends AppCompatActivity {
                                 final ArrayList<String> childData = new ArrayList<>();
                                 if(runsList != null) {
                                     for(int i = 0; i < runsList.size(); i++) {
-                                        runHeaders.add(runsList.get(i).get("date").toString());
+                                        runHeaders.add(runsList.get(i).get("date").toString()
+                                                .replace("T", " at ")
+                                                .replace("Z", "")
+                                                .replace(".000", ""));
                                     }
                                 }
-//
-//                                Map<String, Object> runData = new HashMap<>();
-//                                //Adding child data
-//                                List<String> top250 = new ArrayList<String>();
-//                                top250.add("123");
-//                                top250.add("1234");
-//                                top250.add("12345");
-//                                top250.add("123456");
-//                                top250.add("1234567");
-//                                top250.add("12345678");
-//                                top250.add("123456789");
-//
-//                                listDataChild.put(runHeaders.get(0), top250);
-
 
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -115,6 +106,18 @@ public class RunsActivity extends AppCompatActivity {
                     });
                 } catch (Exception e){
                     e.toString();
+                    AlertDialog.Builder LocationDisabledDialog = new AlertDialog.Builder(RunsActivity.this);
+                    LocationDisabledDialog.setTitle("Cannot retrieve runs");
+                    LocationDisabledDialog.setMessage("Cannot retrieve runs from the server. \nPlease ensure the device is connected to the internet");
+                    LocationDisabledDialog.setIcon(R.drawable.thumbnail);
+                    LocationDisabledDialog.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    });
+                    AlertDialog alert = LocationDisabledDialog.create();
+                    alert.show();
                 }
             }
         });

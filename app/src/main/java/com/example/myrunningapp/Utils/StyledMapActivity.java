@@ -28,6 +28,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.myrunningapp.Activities.FriendsActivity;
+import com.example.myrunningapp.Activities.LoginActivity;
 import com.example.myrunningapp.Activities.RunsActivity;
 import com.example.myrunningapp.Activities.SettingsActivity;
 import com.example.myrunningapp.Network.MyHTTPClient;
@@ -265,11 +266,6 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
             calorieCounterTxt.setVisibility(View.VISIBLE);
             calorieTitle.setVisibility(View.VISIBLE);
         }
-
-
-
-
-
     }
 
 
@@ -399,17 +395,51 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
+            AlertDialog.Builder LocationDisabledDialog = new AlertDialog.Builder(StyledMapActivity.this);
+            LocationDisabledDialog.setTitle("Network Changed");
+            LocationDisabledDialog.setMessage("Please ensure Location Services are available");
+            LocationDisabledDialog.setIcon(R.drawable.thumbnail);
+            LocationDisabledDialog.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(getApplicationContext(), "Network status changed", Toast.LENGTH_LONG).show();
+                }
+            });
+            AlertDialog alert = LocationDisabledDialog.create();
+            alert.show();
 
         }
 
         @Override
         public void onProviderEnabled(String provider) {
-
+            AlertDialog.Builder LocationDisabledDialog2 = new AlertDialog.Builder(StyledMapActivity.this);
+            LocationDisabledDialog2.setTitle("Location Found");
+            LocationDisabledDialog2.setMessage("Device location has been recognised");
+            LocationDisabledDialog2.setIcon(R.drawable.thumbnail);
+            LocationDisabledDialog2.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(getApplicationContext(), "Setting for location", Toast.LENGTH_LONG).show();
+                }
+            });
+            AlertDialog alert = LocationDisabledDialog2.create();
+            alert.show();
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-
+            AlertDialog.Builder LocationDisabledDialog3 = new AlertDialog.Builder(StyledMapActivity.this);
+            LocationDisabledDialog3.setTitle("Location Lost");
+            LocationDisabledDialog3.setMessage("Please ensure Location Services are enabled");
+            LocationDisabledDialog3.setIcon(R.drawable.thumbnail);
+            LocationDisabledDialog3.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(getApplicationContext(), "Searching for location", Toast.LENGTH_LONG).show();
+                }
+            });
+            AlertDialog alert = LocationDisabledDialog3.create();
+            alert.show();
         }
     };
 
@@ -575,6 +605,18 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                     });
                 } catch (Exception e) {
                     Log.e("", e.toString());
+                    AlertDialog.Builder LocationDisabledDialog = new AlertDialog.Builder(StyledMapActivity.this);
+                    LocationDisabledDialog.setTitle("No Network Connection");
+                    LocationDisabledDialog.setMessage("Cannot store run to the cloud, no network connection found. \nPlease connect the device to the internet and try again.");
+                    LocationDisabledDialog.setIcon(R.drawable.thumbnail);
+                    LocationDisabledDialog.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    });
+                    AlertDialog alert = LocationDisabledDialog.create();
+                    alert.show();
                 }
             }
         });
