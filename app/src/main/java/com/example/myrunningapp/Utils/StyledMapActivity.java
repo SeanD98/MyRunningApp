@@ -24,6 +24,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -63,12 +64,17 @@ import java.util.Timer;
 public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     Handler timerHandler = new Handler();
+
     TextView timerTextView;
     TextView speedTxt;
     TextView distancetxt;
-    ImageView calorieIcon;
     TextView calorieCounterTxt;
     TextView calorieTitle;
+
+    Button dismissButton;
+
+    ConstraintLayout instructionContainer;
+
     long startTime = 0;
     float[] Distance = new float[1];
     float overallDistance;
@@ -137,11 +143,15 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         setContentView(R.layout.activity_maps);
 
         timerTextView = (TextView) findViewById(R.id.run_timer_txtv);
+        timerTextView.setTextColor(getResources().getColor(R.color.txt_colour_3));
         distancetxt = (TextView) findViewById(R.id.distance);
         calorieCounterTxt = (TextView) findViewById(R.id.calorie_counter_txt);
         calorieTitle = (TextView) findViewById(R.id.calorie_title);
         speedTxt = (TextView) findViewById(R.id.speed_txt);
 
+        instructionContainer = (ConstraintLayout) findViewById(R.id.instruction_container_layout);
+
+        dismissButton = (Button) findViewById(R.id.dismiss_bttn);
 
         points = new ArrayList<>();
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -162,6 +172,13 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        dismissButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                instructionContainer.setVisibility(View.GONE);
+            }
+        });
 
         startButton = (FloatingActionButton) findViewById(R.id.start_button);
         stopButton = (FloatingActionButton) findViewById(R.id.stop_button);
@@ -207,6 +224,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                         calorieCounterTxt.setText("");
                         distancetxt.setText("");
                         timerTextView.setText("");
+                        timerTextView.setTextColor(getResources().getColor(R.color.txt_colour_3));
                         speedTxt.setText("");
                         points.clear();
                         //show load screen
@@ -224,6 +242,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                         calorieCounterTxt.setText("");
                         distancetxt.setText("");
                         timerTextView.setText("");
+                        timerTextView.setTextColor(getResources().getColor(R.color.txt_colour_3));
                         speedTxt.setText("");
                         points.clear();
                     }
@@ -562,7 +581,8 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
             case R.string.style_label_default:
                 //Removes previously set style, by setting it to null.
                 style = null;
-                timerTextView.setTextColor(getResources().getColor(R.color.app_background));
+                //timerTextView.setTextColor(getResources().getColor(R.color.app_background));
+                timerTextView.setTextColor(getResources().getColor(R.color.txt_colour_3));
                 break;
             default:
 

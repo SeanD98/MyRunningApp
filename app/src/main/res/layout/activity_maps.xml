@@ -37,6 +37,35 @@
         android:textStyle="bold"
         android:visibility="gone" />
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="241dp"
+        android:layout_above="@+id/bottom_box"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="-120dp"
+        android:layout_marginEnd="220dp"
+        android:layout_marginBottom="-11dp"
+        app:srcCompat="@drawable/timebgnew" />
+
+    <TextView
+        android:id="@+id/run_timer_txtv"
+        android:layout_width="wrap_content"
+        android:layout_height="69dp"
+        android:layout_above="@+id/bottom_box"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="527dp"
+        android:layout_marginEnd="312dp"
+        android:layout_marginBottom="-7dp"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottom_box"
         android:layout_width="match_parent"
@@ -177,36 +206,40 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.782" />
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/instruction_container_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#D5000000"
+        android:clickable="false"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/instruction_txt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:foregroundGravity="center_vertical|center|center_horizontal"
+            android:gravity="center|center_horizontal|center_vertical"
+            android:text="If the map doesn't zoom to your location, \n walk around a bit so it can update your location. "
+            android:textColor="@color/txt_colour_3"
+            android:layout_marginBottom="60dp"/>
+
+        <Button
+            android:id="@+id/dismiss_bttn"
+            android:layout_width="90dp"
+            android:layout_height="28dp"
+            android:background="@drawable/rounded_button_3"
+            android:text="Dismiss"
+            app:layout_constraintBottom_toBottomOf="@+id/instruction_txt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.584" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="241dp"
-        android:layout_above="@+id/bottom_box"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="-120dp"
-        android:layout_marginEnd="220dp"
-        android:layout_marginBottom="-1dp"
-        app:srcCompat="@drawable/timebg" />
-
-    <TextView
-        android:id="@+id/run_timer_txtv"
-        android:layout_width="82dp"
-        android:layout_height="34dp"
-        android:layout_alignBottom="@+id/map"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="517dp"
-        android:layout_marginEnd="312dp"
-        android:layout_marginBottom="18dp"
-        android:gravity="center|center_horizontal|fill_horizontal|center_vertical|fill_vertical"
-        android:textColor="@color/colorAccent"
-        android:textSize="25sp"
-        android:textStyle="bold" />
 
 </RelativeLayout>
