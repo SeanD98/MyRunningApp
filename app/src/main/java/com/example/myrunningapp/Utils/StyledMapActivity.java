@@ -193,6 +193,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                 startTime = System.currentTimeMillis();
                 timerHandler.postDelayed(timerRunnable, 0);
                 distancetxt.setText("0.00");
+                speedTxt.setText("0.00");
                 //speedTxt.setText(String.valueOf(Speed));
                 if (DataController.getInstance(getApplicationContext()).calorieCounterState == 1) {
                     calorieCounterTxt.setVisibility(View.VISIBLE);
@@ -214,7 +215,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                 dialog.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //storeRuns();
+                        storeRuns();
                         stopButton.hide();
                         startButton.show();
                         start = false;
@@ -227,6 +228,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                         timerTextView.setTextColor(getResources().getColor(R.color.txt_colour_3));
                         speedTxt.setText("");
                         points.clear();
+                        Toast.makeText(getApplicationContext(), "Run saved!", Toast.LENGTH_LONG).show();
                         //show load screen
                     }
                 });
@@ -245,6 +247,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                         timerTextView.setTextColor(getResources().getColor(R.color.txt_colour_3));
                         speedTxt.setText("");
                         points.clear();
+                        Toast.makeText(getApplicationContext(), "Run not stored", Toast.LENGTH_LONG).show();
                     }
                 });
                 AlertDialog alert = dialog.create();
@@ -254,7 +257,7 @@ public class StyledMapActivity extends AppCompatActivity implements OnMapReadyCa
                 startButton.show();
                 start = false;
                 stop = true;
-                storeRuns();
+
                 timerHandler.removeCallbacks(timerRunnable);
                 overallDistance = 0;
                 points.clear();

@@ -128,7 +128,11 @@ public class FriendsActivity extends AppCompatActivity {
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        goToAddFriends();
+        if (item.getItemId() == R.id.add_friend_icon){
+            goToAddFriends();
+        } else {
+            finish();
+        }
         return true;
     }
 
